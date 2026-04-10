@@ -2,12 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.dev.pedro.FastAndFuriousBurguer.domain.model;
+package br.dev.pedro.FastAndFuriousBurguer.api.controller;
 
 /**
  *
  * @author sesi3dib
  */
-public class Produtos {
+public class ProdutoController {
     
 }
