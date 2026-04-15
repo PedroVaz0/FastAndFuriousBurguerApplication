@@ -5,9 +5,23 @@
 package br.dev.pedro.FastAndFuriousBurguer.api.controller;
 
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.Pedido;
+import br.dev.pedro.FastAndFuriousBurguer.domain.model.Produto;
+import br.dev.pedro.FastAndFuriousBurguer.domain.repository.PedidoRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -17,19 +31,58 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PedidoController {
     
-    List<Pedido> listaPedidos;
+    @Autowired
+    private PedidoRepository pedidoRepository;
     
     @GetMapping ("/pedido")
     public List<Pedido> listas() {
         
-        listaPedidos = new ArrayList<Pedido>();
-        listaPedidos.add(new Pedido(1, "Pedro", "23405429584"));
-        listaPedidos.add(new Pedido(1, "Julio", "32949584930"));
-        listaPedidos.add(new Pedido(1, "Maiara", "38495739584"));
+        return pedidoRepository.findAll();
+        //return pedidoRepository.findByNome("Riquelme");
+        //return pedidoRepository.findByNomeContaining("Maiara");
+    }
+    
+    
+    @GetMapping ("/pedido/{pedidoID}")
+    public ResponseEntity<Pedido> buscar(@PathVariable Long pedidoID) {
+        Optional<Pedido> pedido = pedidoRepository.findById(pedidoID);
         
-        return listaPedidos;
+        if (pedido.isPresent()) {
+            return ResponseEntity.ok(pedido.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    
+    @PostMapping("/pedido")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Pedido adicionar(@RequestBody Pedido pedido) {
+        return pedidoRepository.save(pedido);
+    }
+    
+    @PutMapping("/pedido/{pedidoID}")
+    public ResponseEntity<Pedido> atualizar(@PathVariable Long pedidoID,
+            @RequestBody Pedido pedido) {
+        if (!pedidoRepository.existsById(pedidoID)) {
+            return ResponseEntity.notFound().build();
+        }
         
+        pedido.setId(pedidoID);
+        pedido = pedidoRepository.save(pedido);
+        return ResponseEntity.ok(pedido);
+    }
+    
+    
+    
+    
+    @DeleteMapping("/pedido/{pedidoID}")
+    public ResponseEntity<Void> excluir(@PathVariable Long pedidoID) {
+        if (!pedidoRepository.existsById(pedidoID)) {
+            return ResponseEntity.notFound().build();
+        }
         
-        
+        pedidoRepository.deleteById(pedidoID);
+        return ResponseEntity.noContent().build();
     }
 }
