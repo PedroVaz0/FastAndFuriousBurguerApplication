@@ -7,6 +7,8 @@ package br.dev.pedro.FastAndFuriousBurguer.api.controller;
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.Pedido;
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.Produto;
 import br.dev.pedro.FastAndFuriousBurguer.domain.repository.ProdutoRepository;
+import br.dev.pedro.FastAndFuriousBurguer.domain.service.ProdutoService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class ProdutoController {
     
     @Autowired
     private ProdutoRepository produtoRepository;
+    
+    @Autowired 
+    private ProdutoService produtoService;
     
     @GetMapping("/produto")
     public List<Produto> listas() {
@@ -58,18 +63,23 @@ public class ProdutoController {
     }
     
     
-    @PutMapping("/produto/{clienteID}")
-    public ResponseEntity<Produto> atualizar(@PathVariable Long produtoID,
-            @RequestBody Produto produto) {
-        
-        
-        if (!produtoRepository.existsById(produtoID)) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        produto.setId(produtoID);
-        produto = produtoRepository.save(produto);
-        return ResponseEntity.ok(produto);
+    @PutMapping("/produto/{produtoID}")
+public ResponseEntity<Produto> atualizar(
+    @PathVariable Long produtoID, 
+    @Valid @RequestBody Produto produto
+) {
+    // 1. Attempt to find the existing record using Optional
+    Optional<Produto> produtoExistente = produtoRepository.findById(produtoID);
+
+    // 2. Use the logic style from your 'buscar' method
+    if (produtoExistente.isPresent()) {
+        // Here we call the service to handle the actual update logic
+        Produto produtoAtualizado = produtoService.atualizar(produtoID, produto);
+        return ResponseEntity.ok(produtoAtualizado);
+    } else {
+        // If it doesn't exist, return 404
+        return ResponseEntity.notFound().build();
     }
+}
      
 }
