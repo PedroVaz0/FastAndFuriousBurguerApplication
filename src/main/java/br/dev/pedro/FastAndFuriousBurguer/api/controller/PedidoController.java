@@ -7,8 +7,10 @@ package br.dev.pedro.FastAndFuriousBurguer.api.controller;
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.Pedido;
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.Produto;
 import br.dev.pedro.FastAndFuriousBurguer.domain.repository.PedidoRepository;
+import br.dev.pedro.FastAndFuriousBurguer.domain.service.PedidoService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,10 @@ public class PedidoController {
     
     @Autowired
     private PedidoRepository pedidoRepository;
+    
+    @Autowired
+    private PedidoService pedidoService;
+    
     
     @GetMapping ("/pedido")
     public List<Pedido> listas() {
@@ -85,4 +91,32 @@ public class PedidoController {
         pedidoRepository.deleteById(pedidoID);
         return ResponseEntity.noContent().build();
     }
-}
+    
+
+    @GetMapping("/pedido/status/{id}")
+    public ResponseEntity<Pedido> buscarStatus(@PathVariable Long id) {
+           Optional<Pedido> pedido = pedidoRepository.findById(id);
+
+           if (pedido.isPresent()) {
+               return ResponseEntity.ok(pedido.get());
+           } else {
+               return ResponseEntity.notFound().build();
+           }
+       }
+    
+    
+        @PutMapping("/pedido/status/{pedidoID}")
+        public ResponseEntity<Pedido> atualizarStatus(
+        @PathVariable Long pedidoID,
+        @Valid @RequestBody Pedido pedido
+    ) {
+        Optional<Pedido> pedidoExistente = pedidoRepository.findById(pedidoID);
+
+        if (pedidoExistente.isPresent()) {
+            Pedido pedidoAtualizado = pedidoService.atualizarStatus(pedidoID, pedido);
+            return ResponseEntity.ok(pedidoAtualizado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    }

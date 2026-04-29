@@ -8,6 +8,9 @@ package br.dev.pedro.FastAndFuriousBurguer.domain.model;
  *
  * @author sesi3dib
  */
-public enum CategoriaProduto {
-    LANCHES, BEBIDAS, ACOMPANHAMENTOS
+public enum StatusPedido {
+    ABERTO,
+    PRONTO,
+    ENTREGUE,
+    CANCELADO
 }

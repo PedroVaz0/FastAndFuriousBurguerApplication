@@ -4,6 +4,7 @@
  */
 package br.dev.pedro.FastAndFuriousBurguer.domain.repository;
 
+import br.dev.pedro.FastAndFuriousBurguer.domain.model.CategoriaProduto;
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.Produto;
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,5 @@ import org.springframework.stereotype.Repository;
 public interface ProdutoRepository extends JpaRepository <Produto, Long>{
     Optional<Produto> findByNome(String nome);
     Optional<Produto> findByNomeContaining(String nome);
+    List<Produto> findByCategoriaProduto(CategoriaProduto categoriaProduto);
 }
