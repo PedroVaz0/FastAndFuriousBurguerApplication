@@ -1,8 +1,8 @@
 package br.dev.pedro.FastAndFuriousBurguer.api.controller;
 
+import br.dev.pedro.FastAndFuriousBurguer.PedidoDTO.ProdutoRequestDTO;
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.CategoriaProduto;
 import br.dev.pedro.FastAndFuriousBurguer.domain.model.Produto;
-import br.dev.pedro.FastAndFuriousBurguer.domain.repository.ProdutoRepository;
 import br.dev.pedro.FastAndFuriousBurguer.domain.service.ProdutoService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -13,23 +13,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/produto")  // corrigido: estava com ´ em vez de /
+@RequestMapping("/produto")
 public class ProdutoController {
 
     @Autowired
-    private ProdutoRepository produtoRepository;
-
-    @Autowired
-    private ProdutoService produtoService;
+    private ProdutoService produtoService; // ← apenas o service, sem repository
 
     @GetMapping
     public List<Produto> listar() {
-        return produtoRepository.findAll();
+        return produtoService.listar();
     }
 
     @GetMapping("/{produtoID}")
     public ResponseEntity<Produto> buscar(@PathVariable Long produtoID) {
-        Optional<Produto> produto = produtoRepository.findById(produtoID);
+        Optional<Produto> produto = produtoService.buscar(produtoID);
         if (produto.isPresent()) {
             return ResponseEntity.ok(produto.get());
         } else {
@@ -39,37 +36,40 @@ public class ProdutoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Produto adicionar(@RequestBody Produto produto) {
-        return produtoRepository.save(produto);
+    public Produto adicionar(@Valid @RequestBody ProdutoRequestDTO dto) {
+        Produto produto = new Produto();
+        produto.setNome(dto.getNome());
+        produto.setPreco(dto.getPreco());
+        produto.setDescricao(dto.getDescricao());
+        produto.setCategoriaProduto(dto.getCategoriaProduto());
+        return produtoService.adicionar(produto);
     }
 
     @PutMapping("/{produtoID}")
     public ResponseEntity<Produto> atualizar(
             @PathVariable Long produtoID,
-            @Valid @RequestBody Produto produto
-    ) {
-        Optional<Produto> produtoExistente = produtoRepository.findById(produtoID);
-        if (produtoExistente.isPresent()) {
-            Produto produtoAtualizado = produtoService.atualizar(produtoID, produto);
-            return ResponseEntity.ok(produtoAtualizado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+            @Valid @RequestBody ProdutoRequestDTO dto) {
+        Produto dadosNovos = new Produto();
+        dadosNovos.setNome(dto.getNome());
+        dadosNovos.setPreco(dto.getPreco());
+        dadosNovos.setDescricao(dto.getDescricao());
+        dadosNovos.setCategoriaProduto(dto.getCategoriaProduto());
+        return ResponseEntity.ok(produtoService.atualizar(produtoID, dadosNovos));
     }
 
-    @DeleteMapping("/{produtoID}")  // corrigido: estava faltando } no fim
+    @DeleteMapping("/{produtoID}")
     public ResponseEntity<Void> excluir(@PathVariable Long produtoID) {
         produtoService.excluir(produtoID);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/cat/{categoriaProduto}")
-    public ResponseEntity<List<Produto>> buscarCat(@PathVariable CategoriaProduto categoriaProduto) {
-        List<Produto> produtos = produtoRepository.findByCategoriaProduto(categoriaProduto);
+    public ResponseEntity<List<Produto>> buscarPorCategoria(
+            @PathVariable CategoriaProduto categoriaProduto) {
+        List<Produto> produtos = produtoService.buscarPorCategoria(categoriaProduto);
         if (produtos.isEmpty()) {
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(produtos);
         }
+        return ResponseEntity.ok(produtos);
     }
 }
