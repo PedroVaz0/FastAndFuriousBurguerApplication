@@ -16,23 +16,24 @@ public class Produto {
     private String nome;
     private Double preco;
     private String descricao;
+
     @Enumerated(EnumType.STRING)
     private CategoriaProduto categoriaProduto;
 
     public Produto() {}
 
-    public Produto(Long id, String nome, Double preco, String ingredientes) {
+    public Produto(Long id, String nome, Double preco, String descricao) {
         this.id = id;
         this.nome = nome;
         this.preco = preco;
-        this.descricao = ingredientes;
+        this.descricao = descricao;
     }
 
-    public Produto(Long id, String nome, Double preco, String ingredientes, CategoriaProduto categoriaProduto) {
+    public Produto(Long id, String nome, Double preco, String descricao, CategoriaProduto categoriaProduto) {
         this.id = id;
         this.nome = nome;
         this.preco = preco;
-        this.descricao = ingredientes;
+        this.descricao = descricao;
         this.categoriaProduto = categoriaProduto;
     }
 
@@ -45,8 +46,8 @@ public class Produto {
     public Double getPreco() { return preco; }
     public void setPreco(Double preco) { this.preco = preco; }
 
-    public String getIngredientes() { return descricao; }
-    public void setIngredientes(String ingredientes) { this.descricao = ingredientes; }
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 
     public CategoriaProduto getCategoriaProduto() { return categoriaProduto; }
     public void setCategoriaProduto(CategoriaProduto categoriaProduto) { this.categoriaProduto = categoriaProduto; }
@@ -64,6 +65,6 @@ public class Produto {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         final Produto other = (Produto) obj;
-        return this.id == other.id;
+        return this.id.equals(other.id); // ← corrigido
     }
 }
