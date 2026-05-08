@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,24 @@ public class Pedido {
     private Long id;
     private String nome;
     private String cpf;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataFechamento;
+
+    public LocalDateTime getDataFechamento() {
+        return dataFechamento;
+    }
+
+    public void setDataFechamento(LocalDateTime dataFechamento) {
+        this.dataFechamento = dataFechamento;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
